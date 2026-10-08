@@ -47,14 +47,22 @@ pipeline {
                     sh '''
                         export KUBECONFIG="$KUBECONFIG"
 
+                        echo "Checking Kubernetes cluster..."
+                        kubectl config current-context
+
+                        echo "Applying Kubernetes configuration..."
                         kubectl apply -f deployment.yaml
 
+                        echo "Waiting for deployment..."
                         kubectl rollout status deployment/student-event
 
+                        echo "Deployment status:"
                         kubectl get deployment student-event
 
+                        echo "Pod status:"
                         kubectl get pods -l app=student-event
 
+                        echo "Service status:"
                         kubectl get service student-event-service
                     '''
                 }
@@ -70,7 +78,7 @@ pipeline {
             echo '========================================'
             echo "Docker Image: ${DOCKER_IMAGE}:latest"
             echo 'Replicas: 3'
-            echo 'NodePort: 30080'
+            echo 'NodePort: 30081'
             echo '========================================'
         }
 
