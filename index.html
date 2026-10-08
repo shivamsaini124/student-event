@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Event Registration</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        header {
+            background: #244c8f;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header p {
+            margin: 8px 0 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 35px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background: #244c8f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #19396d;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Student Event Registration</h1>
+    <p>Register now and participate in our upcoming event</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Tech Innovation Summit 2026</h2>
+
+        <p>
+            Join us for an exciting student technology event featuring
+            discussions on software engineering, cloud computing,
+            DevOps, artificial intelligence, and emerging technologies.
+        </p>
+
+        <p>
+            <strong>Event Date:</strong> 25 October 2026
+        </p>
+
+        <form>
+
+            <label>Student Name</label>
+            <input
+                type="text"
+                placeholder="Enter your full name"
+            >
+
+            <label>Register Number</label>
+            <input
+                type="text"
+                placeholder="Enter your register number"
+            >
+
+            <label>Department</label>
+            <select>
+                <option>Select Department</option>
+                <option>Computer Science</option>
+                <option>Information Technology</option>
+                <option>Software Engineering</option>
+                <option>Electronics</option>
+            </select>
+
+            <label>Email</label>
+            <input
+                type="email"
+                placeholder="Enter your email address"
+            >
+
+            <button type="submit">
+                Register for Event
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
