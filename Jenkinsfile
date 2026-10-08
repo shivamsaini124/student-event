@@ -4,12 +4,17 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "shivam3294/student-event"
+        DOCKER_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
 
         stage('Clone Code') {
             steps {
+                echo '========================================'
+                echo 'CLONING CODE FROM GITHUB'
+                echo '========================================'
+
                 git branch: 'main',
                     url: 'https://github.com/shivamsaini124/student-event.git'
             }
@@ -17,12 +22,27 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build --pull=false -t $DOCKER_IMAGE:latest .'
+                echo '========================================'
+                echo 'BUILDING DOCKER IMAGE'
+                echo '========================================'
+
+                sh '''
+                    docker build --pull=false \
+                        -t $DOCKER_IMAGE:$DOCKER_TAG .
+
+                    docker tag \
+                        $DOCKER_IMAGE:$DOCKER_TAG \
+                        $DOCKER_IMAGE:latest
+                '''
             }
         }
 
         stage('Push Image') {
             steps {
+                echo '========================================'
+                echo 'PUSHING IMAGE TO DOCKER HUB'
+                echo '========================================'
+
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'dockerhub',
@@ -30,14 +50,24 @@ pipeline {
                         passwordVariable: 'PASS'
                     )
                 ]) {
-                    sh 'echo "$PASS" | docker login -u "$USER" --password-stdin'
-                    sh 'docker push $DOCKER_IMAGE:latest'
+                    sh '''
+                        echo "$PASS" | docker login \
+                            -u "$USER" \
+                            --password-stdin
+
+                        docker push $DOCKER_IMAGE:$DOCKER_TAG
+                        docker push $DOCKER_IMAGE:latest
+                    '''
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
+                echo '========================================'
+                echo 'DEPLOYING TO KUBERNETES'
+                echo '========================================'
+
                 withCredentials([
                     file(
                         credentialsId: 'kuberconfig',
@@ -53,17 +83,43 @@ pipeline {
                         echo "Applying Kubernetes configuration..."
                         kubectl apply -f deployment.yaml
 
-                        echo "Waiting for deployment..."
-                        kubectl rollout status deployment/student-event
+                        echo "Updating deployment to new Docker image..."
 
-                        echo "Deployment status:"
+                        kubectl set image \
+                            deployment/student-event \
+                            student-event=$DOCKER_IMAGE:$DOCKER_TAG
+
+                        echo "Waiting for rollout..."
+
+                        kubectl rollout status \
+                            deployment/student-event
+
+                        echo "========================================"
+                        echo "DEPLOYMENT STATUS"
+                        echo "========================================"
+
                         kubectl get deployment student-event
 
-                        echo "Pod status:"
+                        echo "========================================"
+                        echo "POD STATUS"
+                        echo "========================================"
+
                         kubectl get pods -l app=student-event
 
-                        echo "Service status:"
+                        echo "========================================"
+                        echo "SERVICE STATUS"
+                        echo "========================================"
+
                         kubectl get service student-event-service
+
+                        echo "========================================"
+                        echo "IMAGE USED"
+                        echo "========================================"
+
+                        kubectl get deployment student-event \
+                            -o jsonpath="{.spec.template.spec.containers[0].image}"
+
+                        echo
                     '''
                 }
             }
@@ -76,7 +132,7 @@ pipeline {
             echo '========================================'
             echo 'STUDENT EVENT DEPLOYMENT SUCCESSFUL'
             echo '========================================'
-            echo "Docker Image: ${DOCKER_IMAGE}:latest"
+            echo "Docker Image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
             echo 'Replicas: 3'
             echo 'NodePort: 30081'
             echo '========================================'
